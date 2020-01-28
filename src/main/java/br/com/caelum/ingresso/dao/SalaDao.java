@@ -13,23 +13,23 @@ import java.util.List;
 @Repository
 public class SalaDao {
 
-    @PersistenceContext
-    private EntityManager manager;
+	@PersistenceContext
+	private EntityManager manager;
 
-    public Sala findOne(Integer id) {
+	public Sala findOne(Integer id) {
 
-        return manager.find(Sala.class, id);
-    }
+		return manager.find(Sala.class, id);
+	}
 
-    public void save(Sala sala) {
-        manager.merge(sala);
-    }
+	public void save(Sala sala) {
+		manager.merge(sala);
+	}
 
-    public List<Sala> findAll() {
-        return manager.createQuery("select s from Sala s", Sala.class).getResultList();
-    }
+	public List<Sala> findAll() {
+		return manager.createQuery("select s from Sala s", Sala.class).getResultList();
+	}
 
-    public void delete(Integer id) {
-        manager.remove(findOne(id));
-    }
+	public void delete(Integer id) {
+		manager.remove(findOne(id));
+	}
 }

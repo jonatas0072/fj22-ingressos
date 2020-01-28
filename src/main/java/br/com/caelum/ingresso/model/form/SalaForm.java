@@ -10,51 +10,51 @@ import br.com.caelum.ingresso.model.Lugar;
 import br.com.caelum.ingresso.model.Sala;
 
 public class SalaForm {
-    private Integer salaId;
+	private Integer salaId;
 
-    @NotBlank
-    private String nome;
+	@NotBlank
+	private String nome;
 
-    private List<Lugar> lugares = new ArrayList<>();
+	private List<Lugar> lugares = new ArrayList<>();
 
-    public SalaForm() {
-    }
+	public SalaForm() {
+	}
 
-    public SalaForm(Sala sala) {
-        this.salaId = sala.getId();
-        this.nome = sala.getNome();
-        this.lugares = new ArrayList<>(sala.getLugares());
-    }
+	public SalaForm(Sala sala) {
+		this.salaId = sala.getId();
+		this.nome = sala.getNome();
+		this.lugares = new ArrayList<>(sala.getLugares());
+	}
 
-    public Integer getSalaId() {
-        return salaId;
-    }
+	public Integer getSalaId() {
+		return salaId;
+	}
 
-    public void setSalaId(Integer salaId) {
-        this.salaId = salaId;
-    }
+	public void setSalaId(Integer salaId) {
+		this.salaId = salaId;
+	}
 
-    public String getNome() {
-        return nome;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    public List<Lugar> getLugares() {
-        return lugares;
-    }
+	public List<Lugar> getLugares() {
+		return lugares;
+	}
 
-    public void setLugares(List<Lugar> lugares) {
-        this.lugares = lugares;
-    }
+	public void setLugares(List<Lugar> lugares) {
+		this.lugares = lugares;
+	}
 
-    public Sala toSala() {
-        Sala sala = new Sala(this.nome);
-        sala.setId(this.salaId);
-        sala.setLugares(new HashSet<>(this.lugares));
-        return sala;
-    }
+	public Sala toSala() {
+		Sala sala = new Sala(this.nome);
+		sala.setId(this.salaId);
+		sala.setLugares(new HashSet<>(this.lugares));
+		return sala;
+	}
 
 }

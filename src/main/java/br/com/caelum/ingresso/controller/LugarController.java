@@ -22,43 +22,41 @@ import javax.validation.Valid;
 @Controller
 public class LugarController {
 
+	@Autowired
+	private SalaDao salaDao;
+	@Autowired
+	private LugarDao lugarDao;
 
-    @Autowired
-    private SalaDao salaDao;
-    @Autowired
-    private LugarDao lugarDao;
+	@GetMapping("/admin/lugar")
+	public ModelAndView form(@RequestParam("salaId") Integer salaId, LugarForm lugarDto) {
 
-    @GetMapping("/admin/lugar")
-    public ModelAndView form(@RequestParam("salaId") Integer salaId, LugarForm lugarDto) {
+		lugarDto.setSalaId(salaId);
 
-        lugarDto.setSalaId(salaId);
+		ModelAndView view = new ModelAndView("lugar/lugar");
 
-        ModelAndView view = new ModelAndView("lugar/lugar");
+		view.addObject("lugarDto", lugarDto);
 
-        view.addObject("lugarDto", lugarDto);
+		return view;
+	}
 
-        return view;
-    }
+	@PostMapping("/admin/lugar")
+	@Transactional
+	public ModelAndView salva(@Valid LugarForm lugarDto, BindingResult result) {
 
+		if (result.hasErrors())
+			return form(lugarDto.getSalaId(), lugarDto);
 
+		Integer salaId = lugarDto.getSalaId();
 
-    @PostMapping("/admin/lugar")
-    @Transactional
-    public ModelAndView salva(@Valid LugarForm lugarDto, BindingResult result) {
+		Lugar lugar = lugarDto.toLugar();
+		lugarDao.save(lugar);
 
-        if (result.hasErrors()) return form(lugarDto.getSalaId(), lugarDto);
+		Sala sala = salaDao.findOne(salaId);
+		sala.add(lugar);
 
-        Integer salaId = lugarDto.getSalaId();
+		salaDao.save(sala);
 
-        Lugar lugar = lugarDto.toLugar();
-        lugarDao.save(lugar);
-
-        Sala sala = salaDao.findOne(salaId);
-        sala.add(lugar);
-
-        salaDao.save(sala);
-
-        return new ModelAndView("redirect:/admin/sala/"+salaId+"/lugares/");
-    }
+		return new ModelAndView("redirect:/admin/sala/" + salaId + "/lugares/");
+	}
 
 }
