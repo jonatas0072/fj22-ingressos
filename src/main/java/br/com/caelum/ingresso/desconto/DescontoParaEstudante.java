@@ -14,4 +14,9 @@ public class DescontoParaEstudante implements Desconto {
 	private BigDecimal aplicandoDesconto(BigDecimal precoDesconto) {
 		return precoDesconto.multiply(TAXA_DESC0NTO);
 	}
+
+	@Override
+	public String getDescricao() {
+		return "Desconto para Estudante";
+	}
 }

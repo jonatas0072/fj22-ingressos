@@ -1,4 +1,4 @@
-package br.com.caelum.ingresso.validacao;
+package br.com.caelum.ingresso.desconto;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -8,14 +8,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.com.caelum.ingresso.desconto.DescontoParaEstudante;
-import br.com.caelum.ingresso.desconto.DescontoParaIdoso;
-import br.com.caelum.ingresso.desconto.DescontoSemDesconto;
 import br.com.caelum.ingresso.model.Filme;
 import br.com.caelum.ingresso.model.Ingresso;
+import br.com.caelum.ingresso.model.Lugar;
 import br.com.caelum.ingresso.model.Sala;
 import br.com.caelum.ingresso.model.Sessao;
-
+import br.com.caelum.ingresso.model.TipoDeIngresso;
 
 public class DescontoTest {
 
@@ -31,8 +29,9 @@ public class DescontoTest {
 
 	@Test
 	public void naoDeveConcederDescontoParaIngressoNormal() {
+		Lugar lugar = new Lugar("A", 1);
 		Sessao sessao = new Sessao(LocalTime.parse("10:00:00"), filme, sala);
-		Ingresso ingresso = new Ingresso(sessao, new DescontoSemDesconto());
+		Ingresso ingresso = new Ingresso(sessao, TipoDeIngresso.INTEIRO, lugar);
 
 		BigDecimal precoEsperado = new BigDecimal("50.00");
 
@@ -41,8 +40,9 @@ public class DescontoTest {
 
 	@Test
 	public void naoDeveConcederDescontoParaIngressoDeEstudante() {
+		Lugar lugar = new Lugar("A", 2);
 		Sessao sessao = new Sessao(LocalTime.parse("10:00:00"), filme, sala);
-		Ingresso ingresso = new Ingresso(sessao, new DescontoParaEstudante());
+		Ingresso ingresso = new Ingresso(sessao, TipoDeIngresso.ESTUDANTE, lugar);
 
 		BigDecimal precoEsperado = new BigDecimal("25.00");
 
@@ -51,8 +51,9 @@ public class DescontoTest {
 
 	@Test
 	public void naoDeveConcederDescontoParaIngressoDeIdoso() {
+		Lugar lugar = new Lugar("A", 3);
 		Sessao sessao = new Sessao(LocalTime.parse("10:00:00"), filme, sala);
-		Ingresso ingresso = new Ingresso(sessao, new DescontoParaIdoso());
+		Ingresso ingresso = new Ingresso(sessao, TipoDeIngresso.IDOSO, lugar);
 
 		BigDecimal precoEsperado = new BigDecimal("20.00");
 
