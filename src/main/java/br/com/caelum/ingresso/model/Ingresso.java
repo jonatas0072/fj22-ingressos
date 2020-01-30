@@ -21,6 +21,7 @@ public class Ingresso {
 	@ManyToOne
 	private Lugar lugar;
 
+	@ManyToOne
 	private Sessao sessao;
 
 	private BigDecimal preco = BigDecimal.ZERO;
