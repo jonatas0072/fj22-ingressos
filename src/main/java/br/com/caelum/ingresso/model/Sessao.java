@@ -19,79 +19,88 @@ import javax.persistence.OneToMany;
 @Entity
 public class Sessao {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	private LocalTime horario;
+    private LocalTime horario;
 
-	@ManyToOne
-	private Sala sala;
+    @ManyToOne
+    private Sala sala;
 
-	@ManyToOne
-	private Filme filme;
+    @ManyToOne
+    private Filme filme;
 
-	private BigDecimal preco = BigDecimal.ZERO;
+    private BigDecimal preco = BigDecimal.ZERO;
 
-	@OneToMany(mappedBy = "sessao", fetch = FetchType.EAGER)
-	private Set<Ingresso> ingressos = new HashSet<>();
-	
-	public boolean isDisponivel(Lugar lugarSelecionado) {
-		return ingressos.stream().map(Ingresso::getLugar).noneMatch(lugar -> lugar.equals(lugarSelecionado));
-	}
-	
-	public Sessao() {
-	}
+    @OneToMany(mappedBy = "sessao", fetch = FetchType.EAGER)
+    private Set<Ingresso> ingressos = new HashSet<>();
 
-	public Sessao(LocalTime horario, Filme filme, Sala sala) {
-		this.horario = horario;
-		this.sala = sala;
-		this.filme = filme;
-		this.preco = sala.getPreco().add(filme.getPreco());
-	}
+    public boolean isDisponivel(Lugar lugarSelecionado) {
+        return ingressos.stream().map(Ingresso::getLugar)
+                .noneMatch(lugar -> lugar.equals(lugarSelecionado));
+    }
 
-	public LocalTime getHorario() {
-		return horario;
-	}
+    public Sessao() {
+    }
 
-	public void setHorario(LocalTime horario) {
-		this.horario = horario;
-	}
+    public Set<Ingresso> getIngressos() {
+        return ingressos;
+    }
 
-	public Filme getFilme() {
-		return filme;
-	}
+    public void setIngressos(Set<Ingresso> ingressos) {
+        this.ingressos = ingressos;
+    }
 
-	public void setFilme(Filme filme) {
-		this.filme = filme;
-	}
+    public Sessao(LocalTime horario, Filme filme, Sala sala) {
+        this.horario = horario;
+        this.sala = sala;
+        this.filme = filme;
+        this.preco = sala.getPreco().add(filme.getPreco());
+    }
 
-	public Sala getSala() {
-		return sala;
-	}
+    public LocalTime getHorario() {
+        return horario;
+    }
 
-	public void setSala(Sala sala) {
-		this.sala = sala;
-	}
+    public void setHorario(LocalTime horario) {
+        this.horario = horario;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public Filme getFilme() {
+        return filme;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setFilme(Filme filme) {
+        this.filme = filme;
+    }
 
-	public BigDecimal getPreco() {
-		return preco.setScale(2, RoundingMode.HALF_UP);
-	}
+    public Sala getSala() {
+        return sala;
+    }
 
-	public void setPreco(BigDecimal preco) {
-		this.preco = preco;
-	}
+    public void setSala(Sala sala) {
+        this.sala = sala;
+    }
 
-	public Map<String, List<Lugar>> getMapaDeLugares(){
-		return sala.getMapaDeLugares();
-	}
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public BigDecimal getPreco() {
+        return preco.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
+    }
+
+    public Map<String, List<Lugar>> getMapaDeLugares() {
+        return sala.getMapaDeLugares();
+    }
 
 }
