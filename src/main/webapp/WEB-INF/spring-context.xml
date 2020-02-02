@@ -21,7 +21,19 @@
 
 	<context:component-scan
 		base-package="br.com.caelum.ingresso" />
-	<mvc:annotation-driven />
+	<mvc:annotation-driven
+		conversion-service="conversionService" />
+
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean
+					class="br.com.caelum.ingresso.converter.YearMonthConverter" />
+			</set>
+		</property>
+	</bean>
+	
 	<mvc:default-servlet-handler />
 
 	<bean
@@ -40,20 +52,22 @@
 		<property name="password" value="postgres" />
 	</bean>
 
-	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+			<bean
+				class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
 		</property>
 		<property name="jpaProperties">
-        <props>
-            <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
-            <prop key="hibernate.show_sql">true</prop>
-            <prop key="hibernate.hbm2ddl.auto">update</prop>
-            <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
-            <prop key="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</prop>
-        </props>
-        </property>
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</prop>
+			</props>
+		</property>
 	</bean>
 
 	<!-- gerenciamento da transação pelo spring -->
