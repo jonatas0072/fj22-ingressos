@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.caelum.ingresso.dao.FilmeDao;
 import br.com.caelum.ingresso.dao.SalaDao;
 import br.com.caelum.ingresso.dao.SessaoDao;
+import br.com.caelum.ingresso.model.Carrinho;
 import br.com.caelum.ingresso.model.ImagemCapa;
 import br.com.caelum.ingresso.model.Sessao;
 import br.com.caelum.ingresso.model.TipoDeIngresso;
@@ -28,62 +29,73 @@ import br.com.caelum.ingresso.validacao.GerenciadorDeSessao;
 @Controller
 public class SessaoController {
 
-	@Autowired
-	private SalaDao salaDao;
+    @Autowired
+    private SalaDao salaDao;
 
-	@Autowired
-	private FilmeDao filmeDao;
+    @Autowired
+    private FilmeDao filmeDao;
 
-	@Autowired
-	private SessaoDao sessaoDao;
+    @Autowired
+    private SessaoDao sessaoDao;
 
-	@Autowired
-	private OmdbCliente omdbClient;
+    @Autowired
+    private OmdbCliente omdbClient;
 
-	@GetMapping("admin/sessao")
-	public ModelAndView form(@RequestParam("salaId") Integer salaId, SessaoForm form) {
+    @Autowired
+    private Carrinho carrinho;
 
-		ModelAndView modelAndView = new ModelAndView("sessao/sessao");
+    @GetMapping("admin/sessao")
+    public ModelAndView form(@RequestParam("salaId") Integer salaId,
+            SessaoForm form) {
 
-		modelAndView.addObject("sala", salaDao.findOne(salaId));
-		modelAndView.addObject("filmes", filmeDao.findAll());
-		modelAndView.addObject("form", form);
-		return modelAndView;
-	}
+        ModelAndView modelAndView = new ModelAndView("sessao/sessao");
 
-	@PostMapping("admin/sessao")
-	@Transactional
-	public ModelAndView salva(@Valid SessaoForm form, BindingResult result) {
-		if (result.hasErrors())
-			return form(form.getSalaId(), form);
+        modelAndView.addObject("sala", salaDao.findOne(salaId));
+        modelAndView.addObject("filmes", filmeDao.findAll());
+        modelAndView.addObject("form", form);
+        return modelAndView;
+    }
 
-		Sessao sessao = form.toSessao(salaDao, filmeDao);
+    @PostMapping("admin/sessao")
+    @Transactional
+    public ModelAndView salva(@Valid SessaoForm form, BindingResult result) {
+        if (result.hasErrors())
+            return form(form.getSalaId(), form);
 
-		List<Sessao> sessoesDaSala = sessaoDao.buscaSessoesDaSala(sessao.getSala());
+        Sessao sessao = form.toSessao(salaDao, filmeDao);
 
-		GerenciadorDeSessao gerenciador = new GerenciadorDeSessao(sessoesDaSala);
+        List<Sessao> sessoesDaSala = sessaoDao
+                .buscaSessoesDaSala(sessao.getSala());
 
-		if (gerenciador.cabe(sessao)) {
-			sessaoDao.save(sessao);
-			return new ModelAndView("redirect:/admin/sala/" + form.getSalaId() + "/sessoes");
-		}
-		result.rejectValue("horario", "error.sessionConflict",
-				"Conflito com sessões existentes! Escolha outro horário");
-		return form(form.getSalaId(), form);
-	}
+        GerenciadorDeSessao gerenciador = new GerenciadorDeSessao(
+                sessoesDaSala);
 
-	@GetMapping("sessao/{id}/lugares")
-	public ModelAndView lugaresNaSessao(@PathVariable("id") Integer sessaoId) {
-		ModelAndView modelAndView = new ModelAndView("sessao/lugares");
+        if (gerenciador.cabe(sessao)) {
+            sessaoDao.save(sessao);
+            return new ModelAndView(
+                    "redirect:/admin/sala/" + form.getSalaId() + "/sessoes");
+        }
+        result.rejectValue("horario", "error.sessionConflict",
+                "Conflito com sessões existentes! Escolha outro horário");
+        return form(form.getSalaId(), form);
+    }
 
-		Sessao sessao = sessaoDao.findOne(sessaoId);
-		Optional<ImagemCapa> imagemCapa = omdbClient.request(sessao.getFilme(), ImagemCapa.class);
+    @GetMapping("sessao/{id}/lugares")
+    public ModelAndView lugaresNaSessao(@PathVariable("id") Integer sessaoId) {
+        ModelAndView modelAndView = new ModelAndView("sessao/lugares");
 
-		modelAndView.addObject("sessao", sessao);
-		modelAndView.addObject("imagemCapa", imagemCapa.orElse(new ImagemCapa()));
-		modelAndView.addObject("tipoDeIngressos", TipoDeIngresso.values());
+        Sessao sessao = sessaoDao.findOne(sessaoId);
 
-		return modelAndView;
-	}
+        Optional<ImagemCapa> imagemCapa = omdbClient.request(sessao.getFilme(),
+                ImagemCapa.class);
+
+        modelAndView.addObject("sessao", sessao);
+        modelAndView.addObject("carrinho", carrinho);
+        modelAndView.addObject("imagemCapa",
+                imagemCapa.orElse(new ImagemCapa()));
+        modelAndView.addObject("tiposDeIngressos", TipoDeIngresso.values());
+
+        return modelAndView;
+    }
 
 }
