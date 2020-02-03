@@ -17,7 +17,7 @@ public class UsuarioDao {
 
     public Optional<Usuario> findByEmail(String email) {
         return manager
-                .createQuery("select u from Usuario u where u.email = :eamil",
+                .createQuery("select u from Usuario u where u.email = :email",
                         Usuario.class)
                 .setParameter("email", email).getResultList().stream()
                 .findFirst();

@@ -11,22 +11,17 @@ public class Permissao implements GrantedAuthority {
     public static final Permissao COMPRADOR = new Permissao("COMPRADOR");
     public static final Permissao ADMIN = new Permissao("ADMIN");
 
-    private static final long serialVersionUID = -2107346964953180644L;
-
     @Id
     private String nome;
 
-    public Permissao(String nome) {
+    private Permissao(String nome) {
         this.nome = nome;
     }
 
+    /**
+     * @deprecated hibernate only
+     */
     public Permissao() {
-
-    }
-
-    @Override
-    public String getAuthority() {
-        return nome;
     }
 
     public String getNome() {
@@ -37,4 +32,8 @@ public class Permissao implements GrantedAuthority {
         this.nome = nome;
     }
 
+    @Override
+    public String getAuthority() {
+        return nome;
+    }
 }

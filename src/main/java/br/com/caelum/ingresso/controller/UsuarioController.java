@@ -25,74 +25,68 @@ public class UsuarioController {
     @Autowired
     private Mailer mailer;
 
+    @Autowired
+    private TokenHelper tokenHelper;
+
+    @Autowired
     private UsuarioDao usuarioDao;
 
     @Autowired
-    private TokenHelper tokenHelper;
-    
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-    @PostMapping("/usuario/cadastrar")
-    @Transactional
-    public ModelAndView cadastrar(ConfirmacaoLoginForm confirmacaoLoginForm) {
-            ModelAndView view = new ModelAndView("redirect:/login");
-
-            if (confirmacaoLoginForm.isValid()) {
-                    Usuario usuario = confirmacaoLoginForm.toUsuario(usuarioDao, passwordEncoder);
-
-                    usuarioDao.save(usuario);
-
-                    view.addObject("msg", "Usuario cadastrado com sucesso");
-
-                    return view;
-            }
-
-            view.addObject("msg", "O token do link utilizado não foi encontrado!");
-
-            return view;
-            }
-    
-
     @GetMapping("/usuario/request")
-    public ModelAndView formSolicitacaoDeAcesso() {
-        return new ModelAndView("/usuario/form-email");
+    public ModelAndView formSolicitacaoAcesso() {
+        return new ModelAndView("usuario/form-email");
     }
 
     @PostMapping("/usuario/request")
-    public ModelAndView solicitacaoDeAcesso(String email) {
-        ModelAndView view = new ModelAndView("usuario/adicionado");
-
-        Token token = tokenHelper.generatedFrom(email);
+    @Transactional
+    public ModelAndView solicitacaoDeAceso(String email) {
+        ModelAndView modelAndView = new ModelAndView("usuario/adicionado");
+        Token token = tokenHelper.generateFrom(email);
 
         mailer.send(new EmailNovoUsuario(token));
 
-        return view;
+        return modelAndView;
     }
 
-    @GetMapping("/usuario/validate")
+    @GetMapping("/usuario/validade")
     public ModelAndView validaLink(@RequestParam("uuid") String uuid) {
-
         Optional<Token> optionalToken = tokenHelper.getTokenFrom(uuid);
 
         if (!optionalToken.isPresent()) {
             ModelAndView view = new ModelAndView("redirect:/login");
-
             view.addObject("msg",
-                    "O token do link utilizado nao foi encontrado!");
-
+                    "O token do link utilizado não foi encontrado");
             return view;
         }
 
         Token token = optionalToken.get();
 
-        ConfirmacaoLoginForm confirmacaoLoginForm = new ConfirmacaoLoginForm(
-                token);
+        ConfirmacaoLoginForm form = new ConfirmacaoLoginForm(token);
 
-        ModelAndView view = new ModelAndView("/usuario/confirmacao");
+        ModelAndView view = new ModelAndView("usuario/confirmacao");
+        view.addObject("confirmacaoLoginForm", form);
 
-        view.addObject("confirmacaoLoginForm", confirmacaoLoginForm);
+        return view;
+    }
+
+    @PostMapping("/usuario/cadastrar")
+    @Transactional
+    public ModelAndView cadastrar(ConfirmacaoLoginForm form) {
+        ModelAndView view = new ModelAndView("redirect:/login");
+
+        if (form.isValid()) {
+            Usuario usuario = form.toUsuario(usuarioDao, passwordEncoder);
+
+            usuarioDao.save(usuario);
+
+            view.addObject("msg", "Usuario cadastrado com sucesso");
+
+            return view;
+        }
+
+        view.addObject("msg", "O token do link utilizado não foi encontrado!");
 
         return view;
     }

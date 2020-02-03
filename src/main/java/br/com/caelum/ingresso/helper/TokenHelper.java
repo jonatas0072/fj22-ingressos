@@ -12,18 +12,15 @@ import br.com.caelum.ingresso.model.Token;
 public class TokenHelper {
 
     @Autowired
-    private TokenDao dao;
+    private TokenDao tokenDao;
 
-    public Token generatedFrom(String email) {
-
+    public Token generateFrom(String email) {
         Token token = new Token(email);
-
-        dao.save(token);
-
+        tokenDao.save(token);
         return token;
     }
 
     public Optional<Token> getTokenFrom(String uuid) {
-        return dao.findByUuid(uuid);
+        return tokenDao.findByUuid(uuid);
     }
 }

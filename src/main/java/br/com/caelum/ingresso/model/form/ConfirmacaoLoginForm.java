@@ -13,9 +13,7 @@ import br.com.caelum.ingresso.model.Usuario;
 public class ConfirmacaoLoginForm {
 
     private Token token;
-
     private String password;
-
     private String confirmPassword;
 
     public ConfirmacaoLoginForm() {
@@ -50,18 +48,25 @@ public class ConfirmacaoLoginForm {
     }
 
     public boolean isValid() {
-        return password.equals(confirmPassword);
+        return this.password.equals(this.confirmPassword);
     }
 
     public Usuario toUsuario(UsuarioDao dao, PasswordEncoder encoder) {
-        String encriptedPassword = encoder.encode(this.password);
 
+        System.out.println(dao);
+        System.out.println(token);
+        System.out.println(token.getEmail());
+
+        String encryptedPassword = encoder.encode(this.password);
+
+        System.out.println(encryptedPassword);
+        
         String email = token.getEmail();
 
         Usuario usuario = dao.findByEmail(email)
-                .orElse(novoUsuario(email, encriptedPassword));
+                .orElse(novoUsuario(email, encryptedPassword));
 
-        usuario.setPassword(encriptedPassword);
+        usuario.setPassword(encryptedPassword);
 
         return usuario;
     }
